@@ -1,16 +1,7 @@
 import React, { Component } from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  TouchableOpacity,
-  FlatList,
-  WebView,
-} from 'react-native';
-import { Container, Header, Left, Body, Right, Button, Icon, Title } from 'native-base';
-import SideMenu from 'react-native-side-menu';
-import Menu from './Menu';
+import { StyleSheet, Image, FlatList, View, TouchableOpacity } from 'react-native';
+import { Container, Button, Text } from "native-base";
+import { StackNavigator } from 'react-navigation'; // 1.0.0-beta.14
 
 const uri = 'https://wordans-mxelda46illwc0hq.netdna-ssl.com/images/responsive/img_layout/wordans_logo_desktop_EN.png';
 
@@ -29,6 +20,10 @@ const styles = StyleSheet.create({
     color: 'black',
     fontSize: 20
   },
+  list: {
+    borderWidth: 1,
+    borderColor: '#CED0CE'
+  },
   category: {
     flex: 1,
     flexDirection: 'row',
@@ -44,9 +39,13 @@ const styles = StyleSheet.create({
   },
   categoryText: {
     flex: 1,
-    textAlign: 'center',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+  },
+  categorySeparator: {
+    height: 1,
+    width: '100%',
+    backgroundColor: '#CED0CE'
   },
   banner: {
     justifyContent: 'center',
@@ -56,19 +55,14 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class Wordans extends Component {
+class HomeScreen extends React.Component {
   constructor(props) {
     super(props);
 
-    this.toggle = this.toggle.bind(this);
-
     this.state = {
-      isOpen: false,
-      selectedItem: 'About',
       categories: null,
     };
   }
-
   componentDidMount() {
     this._fetchCategories();
   }
@@ -84,99 +78,88 @@ export default class Wordans extends Component {
       .catch(e => e)
       .done();
   }
-
-  toggle() {
-    this.setState({
-      isOpen: !this.state.isOpen,
-    });
-  }
-
-  updateMenuState(isOpen) {
-    this.setState({ isOpen });
-  }
-
-  _renderCategory = item => {
+  _renderCategory = (item, navigate) => {
     if (item.id % 2 == 0)
       return (
-        <View style={styles.category}>
+        <TouchableOpacity activeOpacity={0.8} style={styles.category}
+          onPress={() => navigate('Category', {name: item.name})}>
           <Image resizeMode="cover" style={styles.categoryImage} source={{uri: item.image}} />
-          <Text style={styles.categoryText}>{item.name}</Text>
-        </View>
+          <View style={styles.categoryText}>
+            <Text>{item.name}</Text>
+          </View>
+        </TouchableOpacity>
       );
     else
       return (
-        <View style={styles.category}>
-          <Text style={styles.categoryText}>{item.name}</Text>
+        <TouchableOpacity activeOpacity={0.8} style={styles.category}
+          onPress={() => navigate('Category', {name: item.name})}>
+          <View style={styles.categoryText}>
+            <Text>{item.name}</Text>
+          </View>
           <Image resizeMode="cover" style={styles.categoryImage} source={{uri: item.image}} />
-        </View>
+        </TouchableOpacity>
       );
   }
-
   _renderSeparator = () => {
     return (
       <View
-        style={{
-          height: 1,
-          width: "100%",
-          backgroundColor: "#CED0CE"
-        }}
+        style={styles.categorySeparator}
       />
     );
   }
-
-  onMenuItemSelected = item =>
-    this.setState({
-      isOpen: false,
-      selectedItem: item,
-    });
-
   render() {
-    const menu = <Menu onItemSelected={this.onMenuItemSelected} />;
+    const {navigate} = this.props.navigation;
+
     return (
-      <Container>
-        <SideMenu
-          menu={menu}
-          isOpen={this.state.isOpen}
-          onChange={isOpen => this.updateMenuState(isOpen)}
-        >
-          <Header style={styles.header}>
-            <Left>
-              <Button transparent>
-                <Icon name='arrow-back' style={styles.headerArrow} />
-              </Button>
-            </Left>
-            <Body>
-              <Image
-                style={styles.headerLogo}
-                source={{ uri }}
-              />
-            </Body>
-            <Right>
-              <Button transparent>
-                <TouchableOpacity
-                  onPress={this.toggle}
-                >
-                  <Icon name='menu' style={styles.hamburgerMenu}/>
-                </TouchableOpacity>
-              </Button>
-            </Right>
-          </Header>
-          <View style={styles.banner}>
-            <Text>
-              Welcome to Wordans!!
-            </Text>
-            <Text>
-              Current selected menu item is: {this.state.selectedItem}
-            </Text>
-          </View>
-          <FlatList
-            data={this.state.categories}
-            keyExtractor={item => item.id}
-            ItemSeparatorComponent={this._renderSeparator}
-            renderItem={({item}) => this._renderCategory(item)}
-          />
-        </SideMenu>
-      </Container>
+      <View>
+        <View style={styles.banner}>
+          <Text>
+            Welcome to Wordans!!
+          </Text>
+        </View>
+        <FlatList
+          style={styles.list}
+          data={this.state.categories}
+          keyExtractor={item => item.id}
+          ItemSeparatorComponent={this._renderSeparator}
+          renderItem={({item}) => this._renderCategory(item, navigate)}
+        />
+      </View>
+     )
+   }
+}
+
+class CategoryScreen extends React.Component {
+  render() {
+    const {state} = this.props.navigation;
+
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <Text>{state.params.name}</Text>
+      </View>
+    )
+  }
+}
+
+const RootNavigator = StackNavigator({
+  Home: {
+    screen: HomeScreen,
+    navigationOptions: {
+      headerTitle: <Image style={styles.headerLogo} source={{ uri }} />,
+    },
+  },
+  Category: {
+    screen: CategoryScreen,
+    navigationOptions: {
+      headerTitle: 'Category',
+    },
+  },
+});
+
+export default class Wordans extends Component {
+  render() {
+    return (
+      <RootNavigator />
     );
   }
 }
