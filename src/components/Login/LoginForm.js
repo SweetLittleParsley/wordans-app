@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, TextInput,
   TouchableOpacity, Text, TouchableWithoutFeedback,
-  Keyboard } from 'react-native';
+  Keyboard, AsyncStorage } from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
@@ -27,6 +27,8 @@ const styles = StyleSheet.create({
   }
 });
 
+const ACCESS_TOKEN = 'access_token';
+
 const Errors = (props) => {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -45,6 +47,15 @@ export default class LoginForm extends React.Component {
       email: '',
       password: '',
       errors: [],
+    }
+  }
+
+  async storeToken(accessToken) {
+    try {
+      AsyncStorage.setItem(ACCESS_TOKEN, accessToken);
+      console.log("Token was stored successfull ");
+    } catch(error) {
+      console.log("Something went wrong");
     }
   }
 
@@ -68,7 +79,9 @@ export default class LoginForm extends React.Component {
           //Handle success
           let accessToken = res;
           console.log(accessToken);
+          this.storeToken(accessToken);
           this.setState({errors: []});
+          this.props.navigator.navigate('Home');
       } else {
           //Handle error
           let error = res;

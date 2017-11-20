@@ -8,7 +8,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffb600',
-    paddingTop: 70
   },
   logoContainer: {
     alignItems: 'center',
@@ -18,6 +17,9 @@ const styles = StyleSheet.create({
   logo: {
     width: 300,
     height: 80,
+  },
+  formContainer: {
+    paddingBottom: 20,
   }
 });
 

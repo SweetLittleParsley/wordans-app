@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class HomeScreen extends React.Component {
+export default class Home extends React.Component {
   constructor(props) {
     super(props);
 
@@ -92,7 +92,7 @@ export default class HomeScreen extends React.Component {
     );
   }
   render() {
-    const {navigate} = this.props.navigation;
+    const {navigate} = this.props.navigator;
 
     return (
       <View>

@@ -4,22 +4,7 @@ import { StyleSheet, View, Image,
   TouchableWithoutFeedback } from 'react-native';
 import LoginForm from './LoginForm';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#ffb600',
-    paddingTop: 70
-  },
-  logoContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1
-  },
-  logo: {
-    width: 300,
-    height: 80,
-  }
-});
+const ACCESS_TOKEN = 'access_token';
 
 export default class Login extends React.Component {
   render() {
@@ -32,9 +17,28 @@ export default class Login extends React.Component {
           </View>
         </TouchableWithoutFeedback>
         <View style={styles.formContainer}>
-          <LoginForm />
+          <LoginForm navigator={this.props.navigator} />
         </View>
       </KeyboardAvoidingView>
     )
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#ffb600',
+  },
+  logoContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1
+  },
+  logo: {
+    width: 300,
+    height: 80,
+  },
+  formContainer: {
+    paddingBottom: 20,
+  }
+});
